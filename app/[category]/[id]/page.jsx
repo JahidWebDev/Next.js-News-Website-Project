@@ -1,47 +1,60 @@
 import Image from "next/image";
 import { base_api_url } from "@/config/config";
 
-// ================= GET NEWS =================
 async function getNews(id) {
   try {
     const res = await fetch(`${base_api_url}/api/news/${id}`, {
       cache: "no-store",
     });
 
-    if (!res.ok) return null;
+    console.log("STATUS:", res.status);
 
-    return await res.json();
+    if (!res.ok) {
+      return null;
+    }
+
+    const data = await res.json();
+
+    console.log("API DATA:", data);
+
+    return data;
   } catch (error) {
-    console.log(error);
+    console.log("ERROR:", error);
     return null;
   }
 }
 
-// ================= PAGE =================
 export default async function NewsDetails({ params }) {
-  // ✅ FIX: params is async in new Next.js
-  const { slug } = await params;
+  const { category, id } = await params;
 
-  console.log("SLUG:", slug);
+  console.log("CATEGORY:", category);
+  console.log("ID:", id);
 
-  const newsData = await getNews(slug);
+  const newsData = await getNews(id);
 
-  const news = newsData?.news || newsData;
+  console.log("NEWS DATA:", newsData);
+
+  const news = newsData?.news;
 
   if (!news) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <h1 className="text-3xl font-bold text-red-600">
+      <div className="py-20 text-center">
+        <h1 className="text-4xl font-bold text-red-600">
           News Not Found
         </h1>
+
+        <p className="mt-4">
+          Category: {category}
+        </p>
+
+        <p>ID: {id}</p>
       </div>
     );
   }
 
   return (
-    <section className="max-w-5xl mx-auto px-4 py-10">
-
-      <h1 className="text-4xl font-bold mb-5">
+    <section className="max-w-6xl mx-auto px-4 py-10">
+      <h1 className="text-4xl font-bold mb-6">
         {news.title}
       </h1>
 
@@ -59,7 +72,6 @@ export default async function NewsDetails({ params }) {
           __html: news.description,
         }}
       />
-
     </section>
   );
 }
