@@ -2,21 +2,16 @@ import Image from "next/image";
 import { base_api_url } from "@/config/config";
 
 // ================= GET NEWS =================
-async function getNews(id) {
-  try {
-    const res = await fetch(`${base_api_url}/api/news/${id}`, {
-      cache: "no-store",
-    });
+async function getNews(slug) {
+  const res = await fetch(
+    `${base_api_url}/api/news/slug/${slug}`,
+    { cache: "no-store" }
+  );
 
-    if (!res.ok) return null;
+  if (!res.ok) return null;
 
-    return await res.json();
-  } catch (error) {
-    console.log(error);
-    return null;
-  }
+  return res.json();
 }
-
 // ================= PAGE =================
 export default async function NewsDetails({ params }) {
   // ✅ FIX: params is async in new Next.js
